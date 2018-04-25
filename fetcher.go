@@ -11,15 +11,25 @@ import (
 	"golang.org/x/net/html"
 )
 
+type client interface {
+	Get([]byte, string) (int, []byte, error)
+}
+
 type fetcher struct {
-	client              *fasthttp.Client
+	client              client
 	connectionSemaphore semaphore
 	cache               *sync.Map
 }
 
-func newFetcher(c int) fetcher {
+func newFetcher(c int, a string) fetcher {
+	cl := client(&fasthttp.Client{MaxConnsPerHost: c})
+
+	if a != "" {
+		cl = &fasthttp.HostClient{Addr: a, MaxConns: c}
+	}
+
 	return fetcher{
-		&fasthttp.Client{MaxConnsPerHost: c},
+		cl,
 		newSemaphore(c),
 		&sync.Map{},
 	}

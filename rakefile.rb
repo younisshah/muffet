@@ -35,6 +35,9 @@ task integration_test: :build do
   sh 'diff /tmp/muffet_1.txt /tmp/muffet_2.txt'
 
   sh '! ./muffet http://localhost:8080 | grep .'
+
+  sh './muffet -p us.openproxy.co http://raviqqe.com'
+  sh './muffet --proxy-address us.openproxy.co:80 http://raviqqe.com'
 end
 
 task :serve do

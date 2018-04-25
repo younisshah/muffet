@@ -10,17 +10,19 @@ import (
 const usage = `Muffet, the web repairgirl
 
 Usage:
-	muffet [-c <concurrency>] [-v] <url>
+	muffet [-c <concurrency>] [-p <address>] [-v] <url>
 
 Options:
 	-c, --concurrency <concurrency>  Roughly maximum number of concurrent HTTP connections. [default: 512]
 	-h, --help  Show this help.
+	-p, --proxy-address <address>  Set an HTTP proxy address. (e.g. foo.com:4242)
 	-v, --verbose  Show successful results too.`
 
 type arguments struct {
-	concurrency int
-	url         string
-	verbose     bool
+	concurrency  int
+	url          string
+	proxyAddress string
+	verbose      bool
 }
 
 func getArguments(ss []string) (arguments, error) {
@@ -40,5 +42,12 @@ func getArguments(ss []string) (arguments, error) {
 		return arguments{}, err
 	}
 
-	return arguments{int(c), args["<url>"].(string), args["--verbose"].(bool)}, nil
+	p, _ := args["--proxy-address"].(string)
+
+	return arguments{
+		int(c),
+		args["<url>"].(string),
+		p,
+		args["--verbose"].(bool),
+	}, nil
 }
